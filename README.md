@@ -16,7 +16,7 @@ Modern, battery-included Neovim setup for macOS + Linux with a true-black theme 
 ```bash
 # 1) Clone to any folder, e.g.:
 git clone https://github.com/LambergaR/nvim-configuration ~/.local/share/nvim-configuration
-cd ~/.local/share/nvim-devops-starter
+cd ~/.local/share/nvim-configuration
 
 # 2) Install (symlinks to ~/.config/nvim and bootstraps lazy.nvim)
 ./scripts/install.sh
