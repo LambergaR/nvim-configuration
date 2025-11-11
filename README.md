@@ -1,8 +1,9 @@
-# nvim-devops-starter
+# nvim-configuration
 
 Modern, battery-included Neovim setup for macOS + Linux with a true-black theme and tooling for scripting + infra work (Bash, Python, Terraform/Helm, Docker, Nginx, YAML/JSON). Uses **lazy.nvim** as the plugin manager.
 
 ## What you get
+
 - OLED-friendly black theme (Oxocarbon) with great plugin coverage
 - Telescope + fzf-native, Neo-tree, ToggleTerm, Gitsigns, Trouble, which-key
 - Treesitter for Bash/Python/Lua/JSON/YAML/Markdown/Dockerfile/HCL/Terraform/Helm/Nginx
@@ -11,9 +12,10 @@ Modern, battery-included Neovim setup for macOS + Linux with a true-black theme 
 - Optional extra linting with nvim-lint (shellcheck, yamllint)
 
 ## Quick start
+
 ```bash
 # 1) Clone to any folder, e.g.:
-git clone https://github.com/<you>/nvim-devops-starter ~/.local/share/nvim-devops-starter
+git clone https://github.com/LambergaR/nvim-configuration ~/.local/share/nvim-configuration
 cd ~/.local/share/nvim-devops-starter
 
 # 2) Install (symlinks to ~/.config/nvim and bootstraps lazy.nvim)
@@ -36,3 +38,4 @@ nvim
 ### Remove or change the theme
 Switch between `oxocarbon` and `carbonfox` by editing `lua/ui.lua` (see top section).
 
+```
