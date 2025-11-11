@@ -2,11 +2,15 @@
 set -euo pipefail
 
 # Enhanced installer: macOS (Homebrew) & Linux (apt/dnf/yum)
-# - Installs core deps (nvim, git, ripgrep, build tools, python, pipx)
+# - Installs core deps (neovim, git, ripgrep, build tools, python, pipx)
 # - Uses pipx for Python CLIs (avoids PEP 668 issues)
 # - Ensures ~/.local/bin is on PATH (now and future)
+# - Installs pynvim provider (Python) via pipx
+# - Installs common formatters/linters (shellcheck, shfmt, stylua, jq, yamlfmt)
 # - Symlinks repo to ~/.config/nvim
-# - (Optional) Headless Mason install of LSPs/formatters
+# - Optionally runs headless Treesitter update and Mason installs
+#
+# Idempotent: safe to re-run. No emojis.
 
 log() { printf "\033[1;34m==>\033[0m %s\n" "$*"; }
 warn() { printf "\033[1;33m[!]\033[0m %s\n" "$*"; }
@@ -33,6 +37,11 @@ if [[ -z "$PKG_MGR" ]]; then
 fi
 [[ -z "$PKG_MGR" ]] && die "No supported package manager found (need brew/apt/dnf/yum)."
 log "Using package manager: $PKG_MGR"
+
+# --- macOS build tools hint (for native compiles like telescope-fzf-native) ---
+if [[ "$OS" == "macos" ]] && ! xcode-select -p >/dev/null 2>&1; then
+	warn "Xcode Command Line Tools not detected. If native plugin builds fail, run: xcode-select --install"
+fi
 
 # --- Install core deps ---
 log "Installing core dependencies (neovim, git, ripgrep, build tools, python)..."
@@ -94,27 +103,44 @@ if ! echo ":$PATH:" | grep -q ":$HOME/.local/bin:"; then
 	log "Added ~/.local/bin to PATH (session + shell config)."
 fi
 
+# --- Helper: ensure a pipx package is installed (idempotent) ---
+ensure_pipx_pkg() {
+	local pkg="$1"
+	if ! pipx list --short 2>/dev/null | grep -q "^${pkg}\\b"; then
+		log "Installing ${pkg} via pipx..."
+		pipx install "${pkg}" || warn "Could not install ${pkg} via pipx"
+	else
+		log "${pkg} already installed via pipx"
+	fi
+}
+
 # --- Optional: install Python CLIs via pipx (idempotent) ---
 if command -v pipx >/dev/null 2>&1; then
-	log "Installing Python-based formatters via pipx (non-destructive)..."
-	if ! pipx list | grep -q '^package black '; then
-		pipx install black || warn "Could not install black via pipx"
-	else
-		log "black already installed via pipx"
-	fi
-	if ! pipx list | grep -q '^package ruff '; then
-		pipx install ruff || warn "Could not install ruff via pipx"
-	else
-		log "ruff already installed via pipx"
-	fi
+	ensure_pipx_pkg pynvim # Python provider for Neovim
+	ensure_pipx_pkg black
+	ensure_pipx_pkg ruff
 fi
 
 # --- OS-level extras (optional, comment out if not wanted) ---
 case "$PKG_MGR" in
-brew) brew install shellcheck shfmt stylua || true ;;
-apt) sudo apt install -y shellcheck shfmt || true ;;
-dnf | yum) sudo $PKG_MGR install -y ShellCheck || true ;;
+brew)
+	brew install shellcheck shfmt stylua jq yamlfmt || true
+	;;
+apt)
+	sudo apt install -y shellcheck shfmt jq || true
+	# yamlfmt is not in default repos; install via Homebrew-on-Linux or Go if desired:
+	#   brew install yamlfmt
+	#   or: go install github.com/google/yamlfmt/cmd/yamlfmt@latest
+	;;
+dnf | yum)
+	sudo $PKG_MGR install -y ShellCheck || true
+	# shfmt/jq may be in EPEL or other repos.
+	;;
 esac
+
+# NOTE: 'dockfmt' (Dockerfile formatter) is Go-based and not widely packaged.
+# If you want it, install it separately:
+#   go install github.com/jessfraz/dockfmt@latest
 
 # --- Symlink repo to ~/.config/nvim ---
 CONFIG_DIR="${HOME}/.config/nvim"
@@ -129,6 +155,10 @@ fi
 ln -s "${REPO_DIR}" "${CONFIG_DIR}"
 log "Config linked. Launch Neovim once to bootstrap plugins."
 
+# --- Headless Treesitter update (helps avoid :checkhealth warnings) ---
+log "Updating Treesitter parsers headlessly..."
+nvim --headless "+Lazy! sync" "+TSUpdateSync" +qall || warn "TSUpdate failed; run :TSUpdate inside Neovim."
+
 # --- Headless Mason install (LSPs + formatters) ---
 read -r -p "Install recommended LSPs/formatters via Mason now (headless)? [y/N] " REPLY || true
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
@@ -137,7 +167,7 @@ if [[ "$REPLY" =~ ^[Yy]$ ]]; then
 		"+MasonInstall \
 bash-language-server basedpyright ruff-lsp terraform-ls helm-ls \
 dockerfile-language-server yaml-language-server json-lsp \
-black shfmt stylua" +qall ||
+black shfmt stylua prettierd" +qall ||
 		warn "Mason headless install encountered issues. You can run :Mason inside Neovim."
 fi
 
