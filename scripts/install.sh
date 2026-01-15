@@ -166,17 +166,14 @@ log "Config linked. Launch Neovim once to bootstrap plugins."
 
 # --- Headless Treesitter update (helps avoid :checkhealth warnings) ---
 log "Updating Treesitter parsers headlessly..."
-nvim --headless "+Lazy! sync" "+TSUpdateSync" +qall || warn "TSUpdate failed; run :TSUpdate inside Neovim."
+nvim --headless "+Lazy! sync" "+TSUpdate" +qall || warn "TSUpdate failed; run :TSUpdate inside Neovim."
 
 # --- Headless Mason install (LSPs + formatters) ---
 read -r -p "Install recommended LSPs/formatters via Mason now (headless)? [y/N] " REPLY || true
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
 	log "Syncing plugins (lazy.nvim) and installing tools via Mason..."
 	nvim --headless "+Lazy! sync" \
-		"+MasonInstall \
-bash-language-server basedpyright ruff-lsp terraform-ls helm-ls \
-dockerfile-language-server yaml-language-server json-lsp \
-black shfmt stylua prettierd" +qall ||
+		"+MasonInstall bash-language-server basedpyright ruff-lsp terraform-ls helm-ls dockerfile-language-server yaml-language-server json-lsp black shfmt stylua prettierd" +qall ||
 		warn "Mason headless install encountered issues. You can run :Mason inside Neovim."
 fi
 
