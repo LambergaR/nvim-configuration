@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Enhanced installer: macOS (Homebrew) & Linux (apt/dnf/yum/pacman)
-# - Installs core deps (neovim, git, ripgrep, build tools, python, pipx)
+# - Installs core deps (neovim, git, ripgrep, build tools, python, pipx, nodejs, unzip)
 # - Uses pipx for Python CLIs (avoids PEP 668 issues)
 # - Ensures ~/.local/bin is on PATH (now and future)
 # - Installs pynvim provider (Python) via pipx
@@ -45,22 +45,22 @@ if [[ "$OS" == "macos" ]] && ! xcode-select -p >/dev/null 2>&1; then
 fi
 
 # --- Install core deps ---
-log "Installing core dependencies (neovim, git, ripgrep, build tools, python)..."
+log "Installing core dependencies (neovim, git, ripgrep, build tools, python, node, unzip)..."
 case "$PKG_MGR" in
 brew)
 	brew update
-	brew install neovim git ripgrep make gcc python pipx || true
+	brew install neovim git ripgrep make gcc python pipx node unzip || true
 	;;
 pacman)
 	sudo pacman -Syu --noconfirm
-	sudo pacman -S --noconfirm --needed neovim git curl ripgrep base-devel python python-pipx || true
+	sudo pacman -S --noconfirm --needed neovim git curl ripgrep base-devel python python-pipx npm unzip || true
 	;;
 apt)
 	sudo apt update
-	sudo apt install -y neovim git curl ripgrep build-essential python3 python-pipx stylua || true
+	sudo apt install -y neovim git curl ripgrep build-essential python3 python-pipx stylua npm unzip || true
 	;;
 dnf | yum)
-	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip || true
+	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip nodejs unzip || true
 	# pipx fallback if not packaged
 	if ! command -v pipx >/dev/null 2>&1; then python3 -m pip install --user pipx || true; fi
 	;;
