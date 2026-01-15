@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Enhanced installer: macOS (Homebrew) & Linux (apt/dnf/yum)
+# Enhanced installer: macOS (Homebrew) & Linux (apt/dnf/yum/pacman)
 # - Installs core deps (neovim, git, ripgrep, build tools, python, pipx)
 # - Uses pipx for Python CLIs (avoids PEP 668 issues)
 # - Ensures ~/.local/bin is on PATH (now and future)
@@ -31,11 +31,12 @@ log "Detected OS: $OS"
 PKG_MGR=""
 if command -v brew >/dev/null 2>&1; then PKG_MGR="brew"; fi
 if [[ -z "$PKG_MGR" ]]; then
+	if command -v pacman >/dev/null 2>&1; then PKG_MGR="pacman"; fi
 	if command -v apt >/dev/null 2>&1; then PKG_MGR="apt"; fi
 	if command -v dnf >/dev/null 2>&1; then PKG_MGR="dnf"; fi
 	if command -v yum >/dev/null 2>&1; then PKG_MGR="yum"; fi
 fi
-[[ -z "$PKG_MGR" ]] && die "No supported package manager found (need brew/apt/dnf/yum)."
+[[ -z "$PKG_MGR" ]] && die "No supported package manager found (need brew/pacman/apt/dnf/yum)."
 log "Using package manager: $PKG_MGR"
 
 # --- macOS build tools hint (for native compiles like telescope-fzf-native) ---
@@ -50,9 +51,13 @@ brew)
 	brew update
 	brew install neovim git ripgrep make gcc python pipx || true
 	;;
+pacman)
+	sudo pacman -Syu --noconfirm
+	sudo pacman -S --noconfirm --needed neovim git curl ripgrep base-devel python python-pipx || true
+	;;
 apt)
 	sudo apt update
-	sudo apt install -y neovim git curl ripgrep build-essential python3 python3-pip python3-venv python3-pipx || true
+	sudo apt install -y neovim git curl ripgrep build-essential python3 python-pipx stylua || true
 	;;
 dnf | yum)
 	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip || true
@@ -126,6 +131,10 @@ case "$PKG_MGR" in
 brew)
 	brew install shellcheck shfmt stylua jq yamlfmt || true
 	;;
+pacman)
+	sudo pacman -S --noconfirm --needed shellcheck shfmt stylua jq || true
+	# yamlfmt is available via AUR helpers (e.g., yay -S yamlfmt)
+	;;
 apt)
 	sudo apt install -y shellcheck shfmt jq || true
 	# yamlfmt is not in default repos; install via Homebrew-on-Linux or Go if desired:
@@ -133,7 +142,7 @@ apt)
 	#   or: go install github.com/google/yamlfmt/cmd/yamlfmt@latest
 	;;
 dnf | yum)
-	sudo $PKG_MGR install -y ShellCheck || true
+	sudo $PKG_MGR install -y ShellCheck shfmt jq || true
 	# shfmt/jq may be in EPEL or other repos.
 	;;
 esac

@@ -13,20 +13,28 @@ Modern, battery-included Neovim setup for macOS + Linux with a true-black theme 
 
 ## Quick start
 
+The `scripts/install.sh` script is the fastest way to get started. It's designed to be idempotent (safe to re-run) and supports:
+
+- **macOS** (via Homebrew)
+- **Linux** (Debian/Ubuntu via `apt`, Fedora/CentOS/RHEL via `dnf`/`yum`, Arch via `pacman`)
+
+It will:
+1. Install OS-level dependencies (Neovim, Git, ripgrep, Python, etc.).
+2. Symlink this repository to `~/.config/nvim`.
+3. Offer to run a headless install of Treesitter parsers and Mason packages.
+
+To run it:
 ```bash
-# 1) Clone to any folder, e.g.:
-git clone https://github.com/LambergaR/nvim-configuration ~/.local/share/nvim-configuration
-cd ~/.local/share/nvim-configuration
+# 1) Clone the repository to the standard Neovim config location
+git clone https://github.com/your-username/your-nvim-config.git ~/.config/nvim
 
-# 2) Install (symlinks to ~/.config/nvim and bootstraps lazy.nvim)
-./scripts/install.sh
+# 2) Run the installer
+~/.config/nvim/scripts/install.sh
 
-# 3) Start Neovim – plugins will install
+# 3) Start Neovim
+# Plugins and tools will be bootstrapped on the first run.
 nvim
-
-### OS deps you’ll want
-- ripgrep, git, build tools (for telescope-fzf-native)
-- Python 3 (for black, ruff, etc.)
+```
 
 ### Common keymaps
 - `<space>ff` files, `<space>fg` ripgrep, `<space>fb` buffers, `<space>fh` help
