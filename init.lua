@@ -20,7 +20,6 @@ require("lazy").setup("plugins", { ui = { border = "rounded" } })
 
 -- Load config modules
 require("ui")
-require("treesitter")
 require("lsp")
 require("tooling")
 require("keymaps")

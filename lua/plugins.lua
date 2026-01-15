@@ -35,7 +35,18 @@ return {
   { "mfussenegger/nvim-lint" },
 
   -- Syntax & structure
-  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    opts = {
+      ensure_installed = {
+        "bash", "python", "lua", "json", "yaml", "markdown",
+        "dockerfile", "hcl", "terraform", "helm", "nginx"
+      },
+      highlight = { enable = true },
+      indent = { enable = true },
+    }
+  },
   { "nvim-treesitter/nvim-treesitter-context" },
 
   -- Diagnostics list / quickfix UX
