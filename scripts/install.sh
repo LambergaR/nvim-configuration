@@ -154,15 +154,20 @@ esac
 # --- Symlink repo to ~/.config/nvim ---
 CONFIG_DIR="${HOME}/.config/nvim"
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-log "Linking ${REPO_DIR} -> ${CONFIG_DIR}"
-mkdir -p "$(dirname "${CONFIG_DIR}")"
-if [[ -L "${CONFIG_DIR}" || -d "${CONFIG_DIR}" ]]; then
-	warn "Backing up existing ${CONFIG_DIR} to ${CONFIG_DIR}.bak"
-	rm -rf "${CONFIG_DIR}.bak" || true
-	mv "${CONFIG_DIR}" "${CONFIG_DIR}.bak"
+
+if [[ "$REPO_DIR" != "$CONFIG_DIR" ]]; then
+	log "Linking ${REPO_DIR} -> ${CONFIG_DIR}"
+	mkdir -p "$(dirname "${CONFIG_DIR}")"
+	if [[ -L "${CONFIG_DIR}" || -d "${CONFIG_DIR}" ]]; then
+		warn "Backing up existing ${CONFIG_DIR} to ${CONFIG_DIR}.bak"
+		rm -rf "${CONFIG_DIR}.bak" || true
+		mv "${CONFIG_DIR}" "${CONFIG_DIR}.bak"
+	fi
+	ln -s "${REPO_DIR}" "${CONFIG_DIR}"
+	log "Config linked. Launch Neovim once to bootstrap plugins."
+else
+	log "Repo is already in ${CONFIG_DIR}, skipping symlink."
 fi
-ln -s "${REPO_DIR}" "${CONFIG_DIR}"
-log "Config linked. Launch Neovim once to bootstrap plugins."
 
 # --- Headless Treesitter update (helps avoid :checkhealth warnings) ---
 log "Updating Treesitter parsers headlessly..."
