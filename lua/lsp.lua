@@ -32,8 +32,8 @@ local servers = {
 }
 
 -- Register configs with core LSP, then enable them
+local lspconfig = require("lspconfig")
 for name, cfg in pairs(servers) do
 	cfg.capabilities = capabilities
-	vim.lsp.config(name, cfg)
+	lspconfig[name].setup(cfg)
 end
-vim.lsp.enable(vim.tbl_keys(servers))

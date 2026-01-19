@@ -57,6 +57,9 @@ pacman)
 	;;
 apt)
 	sudo apt update
+	sudo apt install -y software-properties-common
+	sudo add-apt-repository -y ppa:neovim-ppa/unstable
+	sudo apt update
 	sudo apt install -y neovim git curl ripgrep build-essential python3 pipx npm unzip || true
 	;;
 dnf | yum)
