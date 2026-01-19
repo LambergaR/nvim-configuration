@@ -26,7 +26,7 @@ It will:
 To run it:
 ```bash
 # 1) Clone the repository to the standard Neovim config location
-git clone https://github.com/your-username/your-nvim-config.git ~/.config/nvim
+git clone https://github.com/LambergaR/nvim-configuration ~/.config/nvim
 
 # 2) Run the installer
 ~/.config/nvim/scripts/install.sh

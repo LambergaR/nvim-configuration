@@ -57,7 +57,7 @@ pacman)
 	;;
 apt)
 	sudo apt update
-	sudo apt install -y neovim git curl ripgrep build-essential python3 python-pipx stylua npm unzip || true
+	sudo apt install -y neovim git curl ripgrep build-essential python3 pipx npm unzip || true
 	;;
 dnf | yum)
 	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip nodejs unzip || true
