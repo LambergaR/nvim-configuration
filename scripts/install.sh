@@ -188,7 +188,7 @@ read -r -p "Install recommended LSPs/formatters via Mason now (headless)? [y/N] 
 if [[ "$REPLY" =~ ^[Yy]$ ]]; then
 	log "Syncing plugins (lazy.nvim) and installing tools via Mason..."
 	nvim --headless "+Lazy! sync" \
-		"+MasonInstall bash-language-server basedpyright ruff-lsp terraform-ls helm-ls dockerfile-language-server yaml-language-server json-lsp black shfmt stylua prettierd" +qall ||
+		"+MasonInstall bash-language-server basedpyright terraform-ls helm-ls dockerfile-language-server yaml-language-server json-lsp black shfmt stylua prettierd" +qall ||
 		warn "Mason headless install encountered issues. You can run :Mason inside Neovim."
 fi
 
