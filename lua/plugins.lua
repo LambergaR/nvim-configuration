@@ -1,7 +1,18 @@
 -- lua/plugins.lua
 return {
   -- Themes (true black)
-  { "nyoom-engineering/oxocarbon.nvim", priority = 1000 },
+    {
+    "nyoom-engineering/oxocarbon.nvim",
+    priority = 1000,
+    opts = {
+      rocks = {
+        hererocks = true,
+      },
+    },
+    config = function()
+      require("oxocarbon").setup()
+    end,
+  },
   { "EdenEast/nightfox.nvim", priority = 1000 }, -- :colorscheme carbonfox
 
   -- Statusline & UX

@@ -49,21 +49,21 @@ log "Installing core dependencies (neovim, git, ripgrep, build tools, python, no
 case "$PKG_MGR" in
 brew)
 	brew update
-	brew install neovim git ripgrep make gcc python pipx node unzip || true
+	brew install neovim git ripgrep make gcc python pipx node unzip luarocks || true
 	;;
 pacman)
 	sudo pacman -Syu --noconfirm
-	sudo pacman -S --noconfirm --needed neovim git curl ripgrep base-devel python python-pipx npm unzip || true
+	sudo pacman -S --noconfirm --needed neovim git curl ripgrep base-devel python python-pipx npm unzip luarocks || true
 	;;
 apt)
 	sudo apt update
 	sudo apt install -y software-properties-common
 	sudo add-apt-repository -y ppa:neovim-ppa/unstable
 	sudo apt update
-	sudo apt install -y neovim git curl ripgrep build-essential python3 pipx npm unzip || true
+	sudo apt install -y neovim git curl ripgrep build-essential python3 pipx npm unzip luarocks || true
 	;;
 dnf | yum)
-	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip nodejs unzip || true
+	sudo $PKG_MGR install -y neovim git curl ripgrep make gcc python3 python3-pip nodejs unzip luarocks || true
 	# pipx fallback if not packaged
 	if ! command -v pipx >/dev/null 2>&1; then python3 -m pip install --user pipx || true; fi
 	;;
